@@ -24,8 +24,35 @@ Install using `go get github.com/hashicorp/errwrap`.
 Full documentation is available at
 http://godoc.org/github.com/hashicorp/errwrap
 
-Below is an example of its usage:
+Below is a very basic example of its usage:
 
 ```go
-TODO
+// A function that always returns an error, but wraps it, like a real
+// function might.
+func tryOpen() error {
+	_, err := os.Open("/i/dont/exist")
+	if err != nil {
+		return errwrap.Wrap("Doesn't exist: {{err}}", err)
+	}
+
+	return nil
+}
+
+func main() {
+	err := tryOpen()
+
+	// We can use the Contains helpers to check if an error contains
+	// another error. It is safe to do this with a nil error.
+	if errwrap.Contains(err, ErrNotExist) {
+		// Do something
+	}
+	if errwrap.ContainsType(err, new(os.PathError)) {
+		// Do something
+	}
+
+	// Or we can use the associated `Get` functions to just extract
+	// a specific error. This would return nil if that specific error doesn't
+	// exist.
+	perr := errwrap.GetType(err, new(os.PathError))
+}
 ```
