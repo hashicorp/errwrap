@@ -32,7 +32,7 @@ Below is a very basic example of its usage:
 func tryOpen() error {
 	_, err := os.Open("/i/dont/exist")
 	if err != nil {
-		return errwrap.Wrap("Doesn't exist: {{err}}", err)
+		return errwrap.Wrapf("Doesn't exist: {{err}}", err)
 	}
 
 	return nil
