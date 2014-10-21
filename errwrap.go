@@ -14,6 +14,17 @@ import (
 // WalkFunc is the callback called for Walk.
 type WalkFunc func(error)
 
+// Wrapper is an interface that can be implemented by custom types to
+// have all the Contains, Get, etc. functions in errwrap work.
+//
+// When Walk reaches a Wrapper, it will call the callback for every
+// wrapped error in addition to the wrapper itself. Since all the top-level
+// functions in errwrap use Walk, this means that all those functions work
+// with your custom type.
+type Wrapper interface {
+	WrappedErrors() []error
+}
+
 // Wrap defines that outer wraps inner, returning an error type that
 // can be cleanly used with the other methods in this package, such as
 // Contains, GetAll, etc.
@@ -128,9 +139,10 @@ func Walk(err error, cb WalkFunc) {
 	}
 
 	switch e := err.(type) {
-	case *wrappedError:
-		cb(e.Outer)
-		Walk(e.Inner, cb)
+	case Wrapper:
+		for _, err := range e.WrappedErrors() {
+			Walk(err, cb)
+		}
 	default:
 		cb(err)
 	}
@@ -145,4 +157,8 @@ type wrappedError struct {
 
 func (w *wrappedError) Error() string {
 	return w.Outer.Error()
+}
+
+func (w *wrappedError) WrappedErrors() []error {
+	return []error{w.Outer, w.Inner}
 }
