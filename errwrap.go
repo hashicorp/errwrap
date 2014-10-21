@@ -139,7 +139,12 @@ func Walk(err error, cb WalkFunc) {
 	}
 
 	switch e := err.(type) {
+	case *wrappedError:
+		cb(e.Outer)
+		Walk(e.Inner, cb)
 	case Wrapper:
+		cb(err)
+
 		for _, err := range e.WrappedErrors() {
 			Walk(err, cb)
 		}
