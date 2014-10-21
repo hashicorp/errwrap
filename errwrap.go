@@ -59,6 +59,26 @@ func ContainsType(err error, v interface{}) bool {
 	return len(GetAllType(err, v)) > 0
 }
 
+// Get is the same as GetAll but returns the deepest matching error.
+func Get(err error, msg string) error {
+	es := GetAll(err, msg)
+	if len(es) > 0 {
+		return es[len(es)-1]
+	}
+
+	return nil
+}
+
+// GetType is the same as GetAllType but returns the deepest matching error.
+func GetType(err error, v interface{}) error {
+	es := GetAllType(err, v)
+	if len(es) > 0 {
+		return es[len(es)-1]
+	}
+
+	return nil
+}
+
 // GetAll gets all the errors that might be wrapped in err with the
 // given message. The order of the errors is such that the outermost
 // matching error (the most recent wrap) is index zero, and so on.
