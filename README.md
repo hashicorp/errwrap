@@ -17,12 +17,16 @@ rewrapping that happens, when you might just case about one.
 above) by giving a single interface for wrapping errors, checking if a specific
 error is wrapped, and extracting that error.
 
-## Installation and Usage
+## Installation and Docs
 
 Install using `go get github.com/hashicorp/errwrap`.
 
 Full documentation is available at
 http://godoc.org/github.com/hashicorp/errwrap
+
+## Usage
+
+#### Basic Usage
 
 Below is a very basic example of its usage:
 
@@ -55,5 +59,31 @@ func main() {
 	// a specific error. This would return nil if that specific error doesn't
 	// exist.
 	perr := errwrap.GetType(err, new(os.PathError))
+}
+```
+
+#### Custom Types
+
+If you're already making custom types that properly wrap errors, then
+you can get all the functionality of `errwraps.Contains` and such by
+implementing the `Wrapper` interface with just one function. Example:
+
+```go
+type AppError {
+  Code ErrorCode
+  Err  error
+}
+
+func (e *AppError) WrappedErrors() []error {
+  return []error{e.Err}
+}
+```
+
+Now this works:
+
+```go
+err := &AppError{Err: fmt.Errorf("an error")}
+if errwrap.ContainsType(err, fmt.Errorf("")) {
+	// This will work!
 }
 ```
