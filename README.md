@@ -11,7 +11,7 @@ Arguably the _correct_ approach is that you should make a custom structure
 implementing the `error` interface, and have the original error as a field
 on that structure, such [as this example](http://golang.org/pkg/os/#PathError).
 This is a good approach, but you have to know the entire chain of possible
-rewrapping that happens, when you might just case about one.
+rewrapping that happens, when you might just care about one.
 
 `errwrap` formalizes this pattern (it doesn't matter what approach you use
 above) by giving a single interface for wrapping errors, checking if a specific
