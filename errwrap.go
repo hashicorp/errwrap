@@ -32,6 +32,10 @@ type Wrapper interface {
 // This function won't modify the error message at all (the outer message
 // will be used).
 func Wrap(outer, inner error) error {
+	if inner == nil {
+		return nil
+	}
+
 	return &wrappedError{
 		Outer: outer,
 		Inner: inner,
@@ -45,11 +49,11 @@ func Wrap(outer, inner error) error {
 // format is the format of the error message. The string '{{err}}' will
 // be replaced with the original error message.
 func Wrapf(format string, err error) error {
-	outerMsg := "<nil>"
-	if err != nil {
-		outerMsg = err.Error()
+	if err == nil {
+		return nil
 	}
 
+	outerMsg := err.Error()
 	outer := errors.New(strings.Replace(
 		format, "{{err}}", outerMsg, -1))
 
