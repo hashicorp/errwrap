@@ -35,11 +35,7 @@ Below is a very basic example of its usage:
 // function might.
 func tryOpen() error {
 	_, err := os.Open("/i/dont/exist")
-	if err != nil {
-		return errwrap.Wrapf("Doesn't exist: {{err}}", err)
-	}
-
-	return nil
+        return errwrap.Wrapfn("Doesn't exist: {{err}}", err)
 }
 
 func main() {
