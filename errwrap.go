@@ -38,6 +38,15 @@ func Wrap(outer, inner error) error {
 	}
 }
 
+// Wrapn is a `nil`-preserving version of `Wrap`. If `inner == nil`, it
+// returns `nil`.
+func Wrapn(outer, inner error) error {
+	if inner == nil {
+		return nil
+	}
+	return Wrap(outer, inner)
+}
+
 // Wrapf wraps an error with a formatting message. This is similar to using
 // `fmt.Errorf` to wrap an error. If you're using `fmt.Errorf` to wrap
 // errors, you should replace it with this.
@@ -54,6 +63,15 @@ func Wrapf(format string, err error) error {
 		format, "{{err}}", outerMsg, -1))
 
 	return Wrap(outer, err)
+}
+
+// Wrapfn is a `nil`-preserving version of `Wrapf`. If `inner == nil`, it
+// returns `nil`.
+func Wrapfn(outer string, inner error) error {
+	if inner == nil {
+		return nil
+	}
+	return Wrapf(outer, inner)
 }
 
 // Contains checks if the given error contains an error with the
