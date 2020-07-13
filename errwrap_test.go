@@ -1,6 +1,7 @@
 package errwrap
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 )
@@ -90,5 +91,14 @@ func TestGetAllType(t *testing.T) {
 		if len(actual) != tc.Len {
 			t.Fatalf("%d: bad: %#v", i, actual)
 		}
+	}
+}
+
+func TestWrappedError_IsCompatibleWithErrorsUnwrap(t *testing.T) {
+	inner := errors.New("inner error")
+	err := Wrap(errors.New("outer"), inner)
+	actual := errors.Unwrap(err)
+	if actual != inner {
+		t.Fatal("wrappedError did not unwrap to inner")
 	}
 }
