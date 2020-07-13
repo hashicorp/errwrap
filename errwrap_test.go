@@ -42,6 +42,16 @@ func TestGetAll(t *testing.T) {
 			"foo",
 			1,
 		},
+		{
+			fmt.Errorf("foo: %w", fmt.Errorf("bar")),
+			"foo: bar",
+			1,
+		},
+		{
+			fmt.Errorf("foo: %w", fmt.Errorf("bar")),
+			"bar",
+			1,
+		},
 	}
 
 	for i, tc := range cases {
@@ -83,6 +93,11 @@ func TestGetAllType(t *testing.T) {
 			Wrapf("bar", Wrapf("baz", fmt.Errorf("foo"))),
 			Wrapf("", nil),
 			0,
+		},
+		{
+			fmt.Errorf("one: %w", fmt.Errorf("two: %w", fmt.Errorf("three"))),
+			fmt.Errorf("%w", errors.New("")),
+			2,
 		},
 	}
 
