@@ -87,3 +87,4 @@ if errwrap.ContainsType(err, fmt.Errorf("")) {
 	// This will work!
 }
 ```
+Hello World
