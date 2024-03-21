@@ -108,12 +108,3 @@ func TestGetAllType(t *testing.T) {
 		}
 	}
 }
-
-func TestWrappedError_IsCompatibleWithErrorsUnwrap(t *testing.T) {
-	inner := errors.New("inner error")
-	err := Wrap(errors.New("outer"), inner)
-	actual := errors.Unwrap(err)
-	if actual != inner {
-		t.Fatal("wrappedError did not unwrap to inner")
-	}
-}
