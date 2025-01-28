@@ -1,0 +1,36 @@
+name: Build and Test Workflow
+
+on:
+    push:
+        branches: []
+    pull_request:
+        branches: [ 'main' ]
+
+jobs:
+    test:
+        name: Testing
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+            - name: Setup Go
+              uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a
+              with:
+                go-version: 'latest'
+            - name: Unit Test Go
+              run: go test -v ./...
+
+    build:
+        name: Building
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+            - name: Setup Go
+              uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a
+              with: 
+                go-version: 'latest'
+            - name: Build Go
+              run: go build ./...
