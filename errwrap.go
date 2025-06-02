@@ -55,8 +55,8 @@ func Wrapf(format string, err error) error {
 		outerMsg = err.Error()
 	}
 
-	outer := errors.New(strings.Replace(
-		format, "{{err}}", outerMsg, -1))
+	outer := errors.New(strings.ReplaceAll(
+		format, "{{err}}", outerMsg))
 
 	return Wrap(outer, err)
 }
