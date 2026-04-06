@@ -12,7 +12,7 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
             - name: Setup Go
-              uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5
+              uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
               with: 
                 go-version: '1.24'
             - name: Run golangci-lint
