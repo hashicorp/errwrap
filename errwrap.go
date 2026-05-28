@@ -24,6 +24,9 @@ type WalkFunc func(error)
 // wrapped error in addition to the wrapper itself. Since all the top-level
 // functions in errwrap use Walk, this means that all those functions work
 // with your custom type.
+//
+// Note: since Go 1.20 wrappers should instead implement Unwrap() []error
+// as documented in package [errors] and [errors.Join].
 type Wrapper interface {
 	WrappedErrors() []error
 }
@@ -153,9 +156,15 @@ func Walk(err error, cb WalkFunc) {
 		for _, err := range e.WrappedErrors() {
 			Walk(err, cb)
 		}
-	case interface{ Unwrap() error }:
+	case interface{ Unwrap() error }: // Go 1.13
 		cb(err)
 		Walk(e.Unwrap(), cb)
+	case interface{ Unwrap() []error }: // Go 1.20
+		cb(err)
+
+		for _, err := range e.Unwrap() {
+			Walk(err, cb)
+		}
 	default:
 		cb(err)
 	}
