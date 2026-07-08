@@ -1,30 +1,36 @@
 name: Build and Test Workflow
 
-on: 
+on:
   pull_request:
+  push:
     branches: [master]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version:
+          - "oldstable"
+          - "stable"
 
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-            - name: Setup Go
-              uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
-              with: 
-                go-version: '1.24'
-            - name: Run golangci-lint
-              uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-            - name: Run test and generate coverage report
-              run: go test -v ./... -coverprofile=coverage.out
-            - name: Upload Coverage Report
-              uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-              with:
-                  name: coverage-report
-                  path: coverage.out
-            - name: Display Coverage result
-              run: go tool cover -func=coverage.out
-            - name: Build Go
-              run: go build ./...
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - name: Setup Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+      - name: Run test and generate coverage report
+        run: go test -v -race ./... -coverprofile=coverage.out
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: coverage-report
+          path: coverage.out
+      - name: Display Coverage result
+        run: go tool cover -func=coverage.out
+      - name: Build Go
+        run: go build ./...

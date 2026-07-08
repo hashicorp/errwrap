@@ -1,4 +1,4 @@
-# Copyright IBM Corp. 2014, 2025
+# Copyright IBM Corp. 2014, 2026
 # SPDX-License-Identifier: MPL-2.0
 
 version: 2
@@ -10,6 +10,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[chore] : "
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     directory: "/"
@@ -17,3 +21,7 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[chore] : "
+    groups:
+      go:
+        patterns:
+          - "*"
