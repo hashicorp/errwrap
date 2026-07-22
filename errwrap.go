@@ -102,7 +102,7 @@ func GetAll(err error, msg string) []error {
 	var result []error
 
 	Walk(err, func(err error) {
-		if err.Error() == msg {
+		if err != nil && err.Error() == msg {
 			result = append(result, err)
 		}
 	})
@@ -145,7 +145,11 @@ func Walk(err error, cb WalkFunc) {
 
 	switch e := err.(type) {
 	case *wrappedError:
-		cb(e.Outer)
+		// Outer may be nil (Wrap allows it); skip calling the
+		// callback with nil so helpers like GetAll never panic.
+		if e.Outer != nil {
+			cb(e.Outer)
+		}
 		Walk(e.Inner, cb)
 	case Wrapper:
 		cb(err)
@@ -169,6 +173,9 @@ type wrappedError struct {
 }
 
 func (w *wrappedError) Error() string {
+	if w.Outer == nil {
+		return "<nil>"
+	}
 	return w.Outer.Error()
 }
 

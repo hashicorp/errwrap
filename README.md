@@ -9,7 +9,7 @@ with this pattern is that you completely lose the original `error` structure.
 
 Arguably the _correct_ approach is that you should make a custom structure
 implementing the `error` interface, and have the original error as a field
-on that structure, such [as this example](http://golang.org/pkg/os/#PathError).
+on that structure, such [as this example](https://pkg.go.dev/os#PathError).
 This is a good approach, but you have to know the entire chain of possible
 rewrapping that happens, when you might just care about one.
 
@@ -22,7 +22,7 @@ error is wrapped, and extracting that error.
 Install using `go get github.com/hashicorp/errwrap`.
 
 Full documentation is available at
-http://godoc.org/github.com/hashicorp/errwrap
+https://pkg.go.dev/github.com/hashicorp/errwrap
 
 ## Usage
 
@@ -65,11 +65,11 @@ func main() {
 #### Custom Types
 
 If you're already making custom types that properly wrap errors, then
-you can get all the functionality of `errwraps.Contains` and such by
+you can get all the functionality of `errwrap.Contains` and such by
 implementing the `Wrapper` interface with just one function. Example:
 
 ```go
-type AppError {
+type AppError struct {
   Code ErrorCode
   Err  error
 }

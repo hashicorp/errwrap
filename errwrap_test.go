@@ -112,6 +112,21 @@ func TestGetAllType(t *testing.T) {
 	}
 }
 
+func TestWrapNilOuter(t *testing.T) {
+	inner := errors.New("inner")
+	err := Wrap(nil, inner)
+
+	if got := err.Error(); got != "<nil>" {
+		t.Fatalf("Error() = %q, want %q", got, "<nil>")
+	}
+	if !Contains(err, "inner") {
+		t.Fatal("Contains should find inner when Outer is nil")
+	}
+	if got := Get(err, "inner"); got == nil || got.Error() != "inner" {
+		t.Fatalf("Get(inner) = %v, want inner", got)
+	}
+}
+
 func TestWrappedError_IsCompatibleWithErrorsUnwrap(t *testing.T) {
 	inner := errors.New("inner error")
 	err := Wrap(errors.New("outer"), inner)
