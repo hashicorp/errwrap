@@ -179,3 +179,24 @@ func (w *wrappedError) WrappedErrors() []error {
 func (w *wrappedError) Unwrap() error {
 	return w.Inner
 }
+
+// WrapNil is like Wrap, but returns nil when both outer and inner are nil.
+// If only one side is non-nil, that error is returned unwrapped. This avoids
+// an extra nil check at call sites that only wrap on error.
+func WrapNil(outer, inner error) error {
+	if outer == nil {
+		return inner
+	}
+	if inner == nil {
+		return outer
+	}
+	return Wrap(outer, inner)
+}
+
+// WrapfNil is like Wrapf, but returns nil when err is nil.
+func WrapfNil(format string, err error) error {
+	if err == nil {
+		return nil
+	}
+	return Wrapf(format, err)
+}
