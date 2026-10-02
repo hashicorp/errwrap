@@ -120,3 +120,53 @@ func TestWrappedError_IsCompatibleWithErrorsUnwrap(t *testing.T) {
 		t.Fatal("wrappedError did not unwrap to inner")
 	}
 }
+
+func TestWrapNil(t *testing.T) {
+	if err := WrapNil(errors.New("outer"), nil); err != nil {
+		t.Fatalf("expected nil when inner is nil, got: %v", err)
+	}
+
+	if err := WrapNil(nil, nil); err != nil {
+		t.Fatalf("expected nil when both are nil, got: %v", err)
+	}
+
+	inner := errors.New("inner")
+	outer := errors.New("outer")
+	err := WrapNil(outer, inner)
+	if err == nil {
+		t.Fatal("expected non-nil error when inner is non-nil")
+	}
+	if err.Error() != "outer" {
+		t.Fatalf("expected error %q, got %q", "outer", err.Error())
+	}
+	if !Contains(err, "inner") {
+		t.Fatal("expected error to contain inner")
+	}
+	if !Contains(err, "outer") {
+		t.Fatal("expected error to contain outer")
+	}
+	if actual := errors.Unwrap(err); actual != inner {
+		t.Fatalf("expected unwrapped error to be inner, got %v", actual)
+	}
+}
+
+func TestWrapfNil(t *testing.T) {
+	if err := WrapfNil("failed: {{err}}", nil); err != nil {
+		t.Fatalf("expected nil when err is nil, got: %v", err)
+	}
+
+	inner := errors.New("inner")
+	err := WrapfNil("failed: {{err}}", inner)
+	if err == nil {
+		t.Fatal("expected non-nil error when err is non-nil")
+	}
+	if err.Error() != "failed: inner" {
+		t.Fatalf("expected error %q, got %q", "failed: inner", err.Error())
+	}
+	if !Contains(err, "inner") {
+		t.Fatal("expected error to contain inner")
+	}
+	if actual := errors.Unwrap(err); actual != inner {
+		t.Fatalf("expected unwrapped error to be inner, got %v", actual)
+	}
+}

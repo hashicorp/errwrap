@@ -62,6 +62,22 @@ func main() {
 }
 ```
 
+#### Nil-Safe Wrapping
+
+`WrapNil` and `WrapfNil` return `nil` if the wrapped error is `nil`, avoiding the need for an explicit `if err != nil` check before wrapping:
+
+```go
+func tryOpen() error {
+	_, err := os.Open("/i/dont/exist")
+	return errwrap.WrapfNil("Doesn't exist: {{err}}", err)
+}
+
+func doStep() error {
+	err := step()
+	return errwrap.WrapNil(errors.New("step failed"), err)
+}
+```
+
 #### Custom Types
 
 If you're already making custom types that properly wrap errors, then
