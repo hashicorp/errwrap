@@ -4,8 +4,9 @@
 and checking if an error contains another error.
 
 There is a common pattern in Go of taking a returned `error` value and
-then wrapping it (such as with `fmt.Errorf`) before returning it. The problem
-with this pattern is that you completely lose the original `error` structure.
+then wrapping it before returning it. Prior to Go 1.13, wrapping errors with
+`fmt.Errorf` would completely lose the original `error` structure. Go 1.13+
+supports native error wrapping via `fmt.Errorf("%w", ...)`.
 
 Arguably the _correct_ approach is that you should make a custom structure
 implementing the `error` interface, and have the original error as a field
@@ -36,7 +37,7 @@ Below is a very basic example of its usage:
 func tryOpen() error {
 	_, err := os.Open("/i/dont/exist")
 	if err != nil {
-		return errwrap.Wrapf("Doesn't exist: {{err}}", err)
+		return fmt.Errorf("Doesn't exist: %w", err)
 	}
 
 	return nil

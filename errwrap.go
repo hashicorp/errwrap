@@ -41,14 +41,13 @@ func Wrap(outer, inner error) error {
 	}
 }
 
-// Wrapf wraps an error with a formatting message. This is similar to using
-// `fmt.Errorf` to wrap an error. If you're using `fmt.Errorf` to wrap
-// errors, you should replace it with this.
+// Wrapf wraps an error with a formatting message.
 //
 // format is the format of the error message. The string '{{err}}' will
 // be replaced with the original error message.
 //
-// Deprecated: Use fmt.Errorf()
+// Deprecated: Go 1.13+ supports native error wrapping via fmt.Errorf("%w", ...).
+// Use fmt.Errorf instead.
 func Wrapf(format string, err error) error {
 	outerMsg := "<nil>"
 	if err != nil {
