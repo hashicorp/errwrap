@@ -172,10 +172,22 @@ func (w *wrappedError) Error() string {
 	return w.Outer.Error()
 }
 
+func (w *wrappedError) Is(err error) bool {
+	return errors.Is(w.Outer, err)
+}
+
+func (w *wrappedError) As(target interface{}) bool {
+	return errors.As(w.Outer, target)
+}
+
 func (w *wrappedError) WrappedErrors() []error {
 	return []error{w.Outer, w.Inner}
 }
 
 func (w *wrappedError) Unwrap() error {
-	return w.Inner
+	if i := errors.Unwrap(w.Inner); i != nil {
+		return Wrap(w.Inner, i)
+	} else {
+		return w.Inner
+	}
 }

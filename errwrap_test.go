@@ -6,14 +6,17 @@ package errwrap
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"testing"
 )
 
 func TestWrappedError_impl(t *testing.T) {
+	t.Parallel()
 	var _ error = new(wrappedError)
 }
 
 func TestGetAll(t *testing.T) {
+	t.Parallel()
 	cases := []struct {
 		Err error
 		Msg string
@@ -58,15 +61,18 @@ func TestGetAll(t *testing.T) {
 	}
 
 	for i, tc := range cases {
-		actual := GetAll(tc.Err, tc.Msg)
-		if len(actual) != tc.Len {
-			t.Fatalf("%d: bad: %#v", i, actual)
-		}
-		for _, v := range actual {
-			if v.Error() != tc.Msg {
+		t.Run(fmt.Sprintf("Test: %d", i), func(t *testing.T) {
+			t.Parallel()
+			actual := GetAll(tc.Err, tc.Msg)
+			if len(actual) != tc.Len {
 				t.Fatalf("%d: bad: %#v", i, actual)
 			}
-		}
+			for _, v := range actual {
+				if v.Error() != tc.Msg {
+					t.Fatalf("%d: bad: %#v", i, actual)
+				}
+			}
+		})
 	}
 }
 
@@ -113,10 +119,44 @@ func TestGetAllType(t *testing.T) {
 }
 
 func TestWrappedError_IsCompatibleWithErrorsUnwrap(t *testing.T) {
+	t.Parallel()
+
 	inner := errors.New("inner error")
 	err := Wrap(errors.New("outer"), inner)
 	actual := errors.Unwrap(err)
 	if actual != inner {
 		t.Fatal("wrappedError did not unwrap to inner")
+	}
+}
+
+func TestWrappedError_IsCompatibleWithErrorsIs(t *testing.T) {
+	t.Parallel()
+
+	inner := errors.New("inner")
+	outer := errors.New("outer")
+	wrapped := Wrap(outer, inner)
+	if !errors.Is(wrapped, outer) {
+		t.Fatal("wrappedError did not errors.Is() to outer")
+	} else if !errors.Is(wrapped, inner) {
+		t.Fatal("wrappedError did not errors.Is() to inner")
+	} else if errors.Is(wrapped, errors.New("unexpected")) {
+		t.Fatal("wrappedError should not have errors.Is() to unexpected")
+	}
+}
+
+type customError int
+
+func (c customError) Error() string { return strconv.Itoa(int(c)) }
+
+func TestWrappedError_IsCompatibleWithErrorsAs(t *testing.T) {
+	t.Parallel()
+
+	inner := customError(123)
+	outer := errors.New("1234")
+	wrapped := Wrap(outer, inner)
+
+	var c customError
+	if !errors.As(wrapped, &c) {
+		t.Fatal("wrappedError should have errors.As() to customError")
 	}
 }
